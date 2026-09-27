@@ -14,7 +14,7 @@ from bot import Bot
 from .button import fsub_button, start_button
 from config import ADMINS, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, FORCE_MSG, START_MSG
 from database.sql import add_user, count_active, count_new, count_users, query_msg
-from helper_func import decode, get_messages, subsall, subsch, subsgc
+from helper_func import decode, get_messages, subsall, subsch, subsex, subsgc
 
 START_TIME = datetime.utcnow()
 START_TIME_ISO = START_TIME.replace(microsecond=0).isoformat()
@@ -38,7 +38,9 @@ async def _human_time_duration(seconds):
     return ", ".join(parts)
 
 
-@Bot.on_message(filters.command("start") & filters.private & subsall & subsch & subsgc)
+@Bot.on_message(
+    filters.command("start") & filters.private & subsall & subsch & subsgc & subsex
+)
 async def start_command(client: Bot, message: Message):
     id = message.from_user.id
     user_name = "@" + message.from_user.username if message.from_user.username else None
