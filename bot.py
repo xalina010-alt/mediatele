@@ -121,6 +121,11 @@ class Bot(Client):
                     f"FORCE_SUB_EXTRA {chat_id} dilewati: {a}. Pastikan @{self.username} admin di sana."
                 )
 
+        self.LOGGER(__name__).info(
+            "Wajib join tambahan: "
+            + (", ".join(f"{t} ({i})" for i, t, _ in self.fsub_extra) or "tidak ada")
+        )
+
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel

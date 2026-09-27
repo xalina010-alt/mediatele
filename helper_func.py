@@ -134,8 +134,10 @@ async def subsextra(filter, client, update):
             member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
         except UserNotParticipant:
             return False
-        except Exception:
-            continue  # tidak bisa dicek (mis. bot dicopot dari admin): jangan kunci pengguna
+        except Exception as e:
+            # tidak bisa dicek (mis. bot dicopot dari admin): jangan kunci pengguna, tapi catat
+            print(f"cek join {chat_id} untuk {user_id} gagal: {e}")
+            continue
         if member.status not in ["creator", "administrator", "member"]:
             return False
     return True
