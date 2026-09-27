@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from bot import Bot
 from .button import fsub_button, start_button
 from config import ADMINS, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, FORCE_MSG, START_MSG
-from database.sql import add_user, full_userbase, query_msg
+from database.sql import add_user, count_active, count_new, count_users, query_msg
 from helper_func import decode, get_messages, subsall, subsch, subsgc
 
 START_TIME = datetime.utcnow()
@@ -156,8 +156,18 @@ async def get_users(client: Bot, message: Message):
     msg = await client.send_message(
         chat_id=message.chat.id, text="<code>Processing ...</code>"
     )
-    users = await full_userbase()
-    await msg.edit(f"{len(users)} <b>Pengguna menggunakan bot ini</b>")
+    total = await count_users()
+    a1, a7, a30 = await count_active(24), await count_active(24 * 7), await count_active(24 * 30)
+    baru = await count_new(24)
+    await msg.edit(
+        "<b>👥 Statistik Pengguna</b>\n\n"
+        f"Total pengguna: <code>{total}</code>\n"
+        f"Aktif 24 jam: <code>{a1}</code>\n"
+        f"Aktif 7 hari: <code>{a7}</code>\n"
+        f"Aktif 30 hari: <code>{a30}</code>\n"
+        f"Pengguna baru 24 jam: <code>{baru}</code>\n\n"
+        "<i>Aktif = pernah memakai bot dalam rentang itu. Dihitung sejak fitur ini dipasang.</i>"
+    )
 
 
 @Bot.on_message(filters.command("broadcast") & filters.user(ADMINS))
