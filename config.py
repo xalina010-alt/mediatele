@@ -55,6 +55,12 @@ FORCE_MSG = os.environ.get(
 # Atur Teks Kustom Anda di sini, Simpan (None) untuk Menonaktifkan Teks Kustom
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
+# Template balasan saat admin mengirim file ke bot (format HTML). Placeholder:
+#   {link}    = link sharing file
+#   {caption} = caption asli file yang dikirim (kosong kalau tidak ada)
+# Kosongkan untuk memakai balasan bawaan ("Link Sharing File Berhasil Di Buat").
+POST_TEMPLATE = os.environ.get("POST_TEMPLATE", "").replace("\\n", "\n").strip()
+
 # Setel True jika Anda ingin Menonaktifkan tombol Bagikan Kiriman Saluran Anda
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == "True"
 
