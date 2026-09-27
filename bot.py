@@ -3,9 +3,11 @@
 # t.me/SharingUserbot & t.me/Lunatic0de
 
 import pyromod.listen
+import asyncio
 import sys
 
 from pyrogram import Client
+from pyrogram.errors import FloodWait
 
 from config import (
     API_HASH,
@@ -33,8 +35,22 @@ class Bot(Client):
         self.LOGGER = LOGGER
 
     async def start(self):
+        # Setiap restart Heroku = login ulang ke Telegram. Kalau terlalu sering, Telegram memberi
+        # FLOOD_WAIT. Dulu bot langsung berhenti -> Heroku restart -> login lagi -> tunggu makin lama.
+        # Sekarang bot menunggu sesuai permintaan Telegram lalu mencoba lagi.
+        for _ in range(5):
+            try:
+                await super().start()
+                break
+            except FloodWait as e:
+                wait = int(getattr(e, "x", None) or getattr(e, "value", 60)) + 5
+                self.LOGGER(__name__).warning(
+                    f"Telegram minta tunggu {wait} detik sebelum login. Bot menunggu, jangan restart..."
+                )
+                await asyncio.sleep(wait)
         try:
-            await super().start()
+            if not self.is_connected:
+                await super().start()
             usr_bot_me = await self.get_me()
             self.username = usr_bot_me.username
             self.namebot = usr_bot_me.first_name
