@@ -9,7 +9,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from bot import Bot
-from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
+from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON, POST_TEMPLATE
 from helper_func import encode
 
 
@@ -50,8 +50,14 @@ async def channel_post(client: Client, message: Message):
         ]
     )
 
+    if POST_TEMPLATE:
+        caption = message.caption.html if message.caption else ""
+        text = POST_TEMPLATE.replace("{link}", link).replace("{caption}", caption).strip()
+    else:
+        text = f"<b>Link Sharing File Berhasil Di Buat :</b>\n\n{link}"
+
     await reply_text.edit(
-        f"<b>Link Sharing File Berhasil Di Buat :</b>\n\n{link}",
+        text,
         reply_markup=reply_markup,
         disable_web_page_preview=True,
     )
