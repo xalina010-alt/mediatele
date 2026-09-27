@@ -14,6 +14,7 @@ from config import (
     APP_ID,
     CHANNEL_ID,
     FORCE_SUB_CHANNEL,
+    FORCE_SUB_EXTRA,
     FORCE_SUB_GROUP,
     LOGGER,
     OWNER,
@@ -100,6 +101,25 @@ class Bot(Client):
                     "Bot Berhenti. Gabung Group https://t.me/PocongUserbot untuk Bantuan"
                 )
                 sys.exit()
+
+        # Channel/grup tambahan. Yang gagal (bot bukan admin) dilewati saja, supaya bot tidak
+        # berhenti lalu di-restart terus oleh Heroku.
+        self.fsub_extra = []
+        for chat_id in FORCE_SUB_EXTRA:
+            try:
+                chat = await self.get_chat(chat_id)
+                link = chat.invite_link
+                if not link:
+                    await self.export_chat_invite_link(chat_id)
+                    chat = await self.get_chat(chat_id)
+                    link = chat.invite_link
+                if not link:
+                    raise ValueError("tidak ada link invite")
+                self.fsub_extra.append((chat_id, chat.title or "Channel", link))
+            except Exception as a:
+                self.LOGGER(__name__).warning(
+                    f"FORCE_SUB_EXTRA {chat_id} dilewati: {a}. Pastikan @{self.username} admin di sana."
+                )
 
         try:
             db_channel = await self.get_chat(CHANNEL_ID)

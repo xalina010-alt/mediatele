@@ -33,6 +33,12 @@ DB_URI = os.environ.get("DATABASE_URL", "")
 # ID dari Channel Atau Group Untuk Wajib Subscribenya
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 FORCE_SUB_GROUP = int(os.environ.get("FORCE_SUB_GROUP", "0"))
+# Channel/grup wajib join tambahan (boleh banyak), pisahkan dengan koma atau spasi.
+# Contoh: "-1001234567890, -1009876543210". Bot harus admin di semuanya.
+FORCE_SUB_EXTRA = [
+    int(x) for x in os.environ.get("FORCE_SUB_EXTRA", "").replace(",", " ").split()
+    if x.strip() not in ("", "0")
+]
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
@@ -56,7 +62,7 @@ FORCE_MSG = os.environ.get(
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 # Template balasan saat admin mengirim file ke bot (format HTML). Placeholder:
-#   {link}    = link sharing file
+#   {link}    = link sharing file (kalau tidak ditulis, link otomatis ditaruh paling atas)
 #   {caption} = caption asli file yang dikirim (kosong kalau tidak ada)
 # Kosongkan untuk memakai balasan bawaan ("Link Sharing File Berhasil Di Buat").
 POST_TEMPLATE = os.environ.get("POST_TEMPLATE", "").replace("\\n", "\n").strip()

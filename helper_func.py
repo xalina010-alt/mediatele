@@ -122,6 +122,26 @@ async def get_message_id(client, message):
             return msg_id
 
 
+async def subsextra(filter, client, update):
+    extra = getattr(client, "fsub_extra", [])
+    if not extra:
+        return True
+    user_id = update.from_user.id
+    if user_id in ADMINS:
+        return True
+    for chat_id, _title, _link in extra:
+        try:
+            member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+        except UserNotParticipant:
+            return False
+        except Exception:
+            continue  # tidak bisa dicek (mis. bot dicopot dari admin): jangan kunci pengguna
+        if member.status not in ["creator", "administrator", "member"]:
+            return False
+    return True
+
+
 subsgc = filters.create(subsgroup)
+subsex = filters.create(subsextra)
 subsch = filters.create(subschannel)
 subsall = filters.create(is_subscribed)
